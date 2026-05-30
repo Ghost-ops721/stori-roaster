@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#ffffff">
+<meta name="description" content="Upload your resume. We roast it. You share it.">
+<meta property="og:title" content="Resume Roast — Stori AI">
+<meta property="og:description" content="Your resume called. It's embarrassed.">
+<title>Resume Roast — Stori AI</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--ink:#0a0a0a;--ink2:#111111;--muted:#666666;--soft:#999999;
+  --rule:#e8e8e8;--card:#0f0f0f;--cb:#1c1c1c;--ct:#f0f0f0;--cm:#888888;
+  --blue:#2563eb;--bh:#1d4ed8;--bl:#eff6ff;--radius:10px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif
+}
+html{font-size:16px}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+.nav{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--rule);padding:0 24px}
+.nav-inner{max-width:700px;margin:0 auto;height:52px;display:flex;align-items:center;justify-content:space-between}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink)}
+.nav-logo-mark{width:28px;height:28px;background:var(--ink);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-mark svg{width:16px;height:16px;fill:#fff}
+.nav-logo-name{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.nav-cta{font-size:13px;font-weight:600;color:var(--blue);text-decoration:none;padding:7px 14px;border:1.5px solid var(--blue);border-radius:999px;transition:background .15s,color .15s;white-space:nowrap}
+.nav-cta:hover{background:var(--blue);color:#fff}
+
+.page{max-width:700px;margin:0 auto;padding:0 20px 130px}
+.screen{display:none}
+.screen.active{display:block}
+
+.cta-strip{background:var(--bl);border:1px solid #bfdbfe;border-radius:var(--radius);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:20px 0}
+.cta-strip p{font-size:13px;color:#1e40af;line-height:1.5}
+.cta-strip strong{font-weight:700;color:#1e3a8a;display:block;font-size:13px}
+.cta-link{font-size:13px;font-weight:600;color:var(--blue);white-space:nowrap;text-decoration:none;border:1.5px solid var(--blue);padding:7px 14px;border-radius:999px;flex-shrink:0;transition:background .15s,color .15s}
+.cta-link:hover{background:var(--blue);color:#fff}
+
+.hero{padding:40px 0 28px;text-align:center}
+.hero-eyebrow{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--blue);margin-bottom:16px}
+.hero-headline{font-size:clamp(28px,7vw,44px);font-weight:800;line-height:1.15;letter-spacing:-.6px;color:var(--ink2)}
+.hero-sub{color:var(--muted);font-size:15px;margin-top:12px;line-height:1.6}
+.counter-wrap{margin-top:14px;font-size:13px;color:var(--soft)}
+.counter-num{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums}
+
+.prev-banner{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.prev-banner p{font-size:13px;color:var(--cm);line-height:1.5}
+.prev-banner strong{color:var(--ct);display:block}
+.prev-btns{display:flex;gap:8px;flex-shrink:0}
+.btn-view{font-size:12px;padding:7px 13px;border-radius:999px;cursor:pointer;font-family:var(--font);background:var(--blue);border:none;color:#fff;font-weight:600}
+.btn-dismiss{font-size:12px;padding:7px 13px;border-radius:999px;cursor:pointer;font-family:var(--font);background:none;border:1px solid #333;color:var(--cm)}
+
+.int-picker{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 20px}
+.int-card{background:var(--bg);border:2px solid var(--rule);border-radius:var(--radius);padding:20px 18px;cursor:pointer;transition:all .15s}
+.int-card:hover{border-color:var(--blue)}
+.int-card.active{border-color:var(--blue);background:var(--bl)}
+.int-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:var(--rule);color:var(--muted);margin-bottom:8px}
+.int-card.active .int-badge{background:var(--blue);color:#fff}
+.int-name{font-size:16px;font-weight:800;color:var(--ink);margin-bottom:6px;letter-spacing:-.2px}
+.int-card.active .int-name{color:var(--blue)}
+.int-desc{font-size:12px;color:var(--muted);line-height:1.55}
+.int-card.active .int-desc{color:#1e40af}
+
+.upload-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:8px}
+.drop-zone{border:1.5px dashed #2a2a2a;border-radius:8px;padding:36px 20px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s,background .15s}
+.drop-zone:hover,.drop-zone.over{border-color:var(--blue);background:rgba(37,99,235,.06)}
+.drop-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.drop-icon{font-size:28px;margin-bottom:10px;display:block;line-height:1}
+.drop-title{font-size:15px;font-weight:600;color:var(--ct);margin-bottom:4px}
+.drop-sub{color:var(--cm);font-size:13px}
+.file-chosen{margin-top:10px;font-size:13px;color:var(--blue);word-break:break-all;min-height:18px;font-weight:500}
+.upload-btn{width:100%;margin-top:10px;padding:14px;background:var(--blue);border:none;border-radius:8px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:var(--font);transition:background .15s,opacity .15s}
+.upload-btn:disabled{opacity:.35;cursor:not-allowed}
+.upload-btn:not(:disabled):hover{background:var(--bh)}
+.fine-print{text-align:center;color:var(--cm);font-size:11px;margin-top:8px;padding-bottom:8px}
+.error-msg{color:#ef4444;font-size:13px;text-align:center;margin-top:10px;min-height:18px;line-height:1.5}
+
+.load-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:40px 24px;margin:32px 0}
+.loading-wrap{text-align:center}
+.load-joke{font-size:18px;font-weight:700;min-height:28px;color:var(--ct);transition:opacity .3s;letter-spacing:-.2px}
+.progress-bg{height:3px;background:#1c1c1c;border-radius:2px;overflow:hidden;margin:24px 0 18px}
+.progress-fill{height:100%;width:0%;background:var(--blue);border-radius:2px;transition:width .5s ease}
+.load-sub{color:var(--cm);font-size:13px}
+
+/* ── RESULT ── */
+.score-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:28px 24px 22px;margin-bottom:10px}
+.score-row{display:flex;align-items:flex-end;gap:18px;margin-bottom:14px;flex-wrap:wrap}
+.score-number{font-size:clamp(80px,20vw,110px);font-weight:900;color:#fff;letter-spacing:-4px;line-height:1}
+.score-den{font-size:28px;color:#444;font-weight:400}
+.score-meta{display:flex;flex-direction:column;gap:8px;padding-bottom:6px}
+.score-lbl{font-size:12px;font-weight:700;color:var(--blue);letter-spacing:1.5px;text-transform:uppercase}
+.verdict-badge{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;padding:4px 12px;border-radius:999px;color:#fff;width:fit-content}
+.one-liner-txt{font-size:14px;color:var(--cm);font-style:italic;line-height:1.75;border-left:2px solid #2a2a2a;padding-left:14px;margin-top:2px}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px}
+.stat-box{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:14px 10px;text-align:center}
+.stat-val{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;line-height:1.2}
+.stat-val.hire-yes{color:#4ade80}
+.stat-val.hire-no{color:#f87171}
+.stat-label{font-size:10px;font-weight:600;color:var(--cm);letter-spacing:1.2px;text-transform:uppercase}
+.stat-comment{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:10px 14px;margin-bottom:10px;font-size:12px;color:var(--cm);font-style:italic;line-height:1.5}
+
+.info-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:16px;margin-bottom:10px}
+.card-ey{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--cm);margin-bottom:10px}
+.card-ey.red{color:#f87171}
+.hire-reason-txt{font-size:14px;color:var(--ct);line-height:1.8}
+
+.crimes-list{list-style:none;counter-reset:c;padding:0}
+.crimes-list li{counter-increment:c;display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid #1a1a1a;font-size:13px;color:#fca5a5;line-height:1.6}
+.crimes-list li:last-child{border-bottom:none;padding-bottom:0}
+.crimes-list li::before{content:counter(c);background:#2a0a0a;color:#f87171;font-size:10px;font-weight:700;min-width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+
+.sec-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:18px;margin-bottom:10px;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s ease}
+.sec-card.show{opacity:1;transform:none}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px}
+.sec-title{font-size:11px;text-transform:uppercase;letter-spacing:1.8px;color:var(--blue);font-weight:700}
+.grade-badge{font-size:12px;font-weight:700;color:#fff;padding:3px 11px;border-radius:4px;flex-shrink:0}
+.sec-roast{font-size:14px;line-height:1.85;color:#d0d0d0;margin-bottom:10px}
+.rf-box{background:#1a0505;border-left:3px solid #dc2626;padding:10px 12px;border-radius:0 6px 6px 0;margin-bottom:8px}
+.rf-label{font-size:10px;font-weight:700;color:#f87171;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.rf-list{list-style:none;padding:0}
+.rf-list li{font-size:12px;color:#fca5a5;line-height:1.8;padding:1px 0}
+.rf-list li::before{content:'◉ ';color:#ef4444;font-size:10px}
+.hl-box{background:#050f05;border-left:3px solid #16a34a;padding:8px 12px;border-radius:0 6px 6px 0;font-size:12px;color:#86efac;line-height:1.55}
+.hl-box::before{content:'★ '}
+
+.closing-card{background:var(--card);border:1px solid var(--cb);border-radius:var(--radius);padding:24px 20px;text-align:center;margin:10px 0 8px}
+.closing-txt{font-size:14px;color:var(--cm);font-style:italic;margin-bottom:20px;line-height:1.7}
+.closing-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.cta-main{display:inline-block;background:var(--blue);color:#fff;font-weight:700;font-size:14px;padding:12px 24px;border-radius:999px;text-decoration:none;transition:background .15s;white-space:nowrap}
+.cta-main:hover{background:var(--bh)}
+.btn-report{display:inline-block;background:none;border:1.5px solid #333;color:var(--cm);font-weight:600;font-size:14px;padding:11px 20px;border-radius:999px;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap}
+.btn-report:hover{border-color:var(--ct);color:var(--ct)}
+.retry-btn{display:block;width:100%;text-align:center;background:none;border:none;color:var(--soft);font-size:13px;margin-top:14px;cursor:pointer;font-family:var(--font);padding:10px;text-decoration:underline;text-underline-offset:3px}
+
+.share-bar{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--rule);padding:10px 20px 14px;display:none;z-index:100}
+.share-bar.show{display:block}
+.share-inner{max-width:700px;margin:0 auto;display:flex;gap:8px}
+.s-btn{flex:1;padding:11px 4px;border-radius:8px;border:1.5px solid var(--rule);background:var(--bg);color:var(--ink);font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);transition:all .15s;white-space:nowrap;text-align:center}
+.s-btn:hover{border-color:var(--blue);color:var(--blue)}
+.s-btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.s-btn.primary:hover{background:var(--bh);border-color:var(--bh)}
+
+.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-70px);background:var(--ink);color:#fff;padding:10px 22px;border-radius:999px;font-size:13px;z-index:999;transition:transform .2s ease;pointer-events:none;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.15)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+#shareCanvas{position:fixed;left:-9999px;top:0}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://stori.co.in" target="_blank" rel="noopener noreferrer">
+      <div class="nav-logo-mark">
+        <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+          <path d="M11.2 2H5.6C4.16 2 3 3.12 3 4.5S4.16 7 5.6 7h4.8C11.84 7 13 8.12 13 9.5S11.84 12 10.4 12H4"/>
+          <style>path{stroke:#fff;stroke-width:2;stroke-linecap:round;fill:none}</style>
+        </svg>
+      </div>
+      <span class="nav-logo-name">stori</span>
+    </a>
+    <a class="nav-cta" href="https://stori.co.in" target="_blank" rel="noopener noreferrer">Fix your resume →</a>
+  </div>
+</nav>
+
+<div class="page">
+
+<!-- LANDING -->
+<div class="screen active" id="s-land">
+  <div class="cta-strip">
+    <p><strong>Want your resume actually fixed?</strong>
+    Stori AI coaches 1000+ Indian applicants get into top global programs.</p>
+    <a class="cta-link" href="https://stori.co.in" target="_blank" rel="noopener noreferrer">Try Stori</a>
+  </div>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Free Resume Roast</div>
+    <h1 class="hero-headline">your resume called.<br>it's embarrassed.</h1>
+    <p class="hero-sub">Upload it. We destroy it. You share the damage.</p>
+    <div class="counter-wrap"><span class="counter-num" id="counterVal">—</span> resumes roasted</div>
+  </div>
+
+  <div class="prev-banner" id="prevBanner" style="display:none">
+    <p><strong>Your last roast is still here.</strong> Want to see it again?</p>
+    <div class="prev-btns">
+      <button class="btn-view" id="prevView">View it</button>
+      <button class="btn-dismiss" id="prevDismiss">Dismiss</button>
+    </div>
+  </div>
+
+  <div class="int-picker">
+    <div class="int-card active" data-v="full">
+      <div class="int-badge">Standard</div>
+      <div class="int-name">Full Roast</div>
+      <div class="int-desc">Savage, specific, and brutal. Every section gets torn apart. The truth, delivered hard.</div>
+    </div>
+    <div class="int-card" data-v="no_mercy">
+      <div class="int-badge">Nuclear</div>
+      <div class="int-name">No Mercy</div>
+      <div class="int-desc">Full rage mode. Swearing. Every line hits. You will question your life choices.</div>
+    </div>
+  </div>
+
+  <div class="upload-card">
+    <div class="drop-zone" id="dropZone" role="button" tabindex="0" aria-label="Upload resume — PDF or DOCX, max 5MB">
+      <input type="file" id="fileInput"
+             accept=".pdf,application/pdf,.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+             aria-label="Choose resume file">
+      <span class="drop-icon">📄</span>
+      <div class="drop-title">Drop your resume here</div>
+      <div class="drop-sub">PDF or DOCX · Max 5MB</div>
+      <div class="file-chosen" id="fileChosen"></div>
+    </div>
+    <div class="error-msg" id="landErr" role="alert" aria-live="polite"></div>
+    <button class="upload-btn" id="uploadBtn" disabled>Roast My Resume</button>
+    <p class="fine-print">we read it, roast it, delete it — never stored</p>
+  </div>
+</div>
+
+<!-- LOADING -->
+<div class="screen" id="s-load">
+  <div class="hero">
+    <div class="hero-eyebrow">Working on it</div>
+    <h1 class="hero-headline">processing your<br>crimes.</h1>
+  </div>
+  <div class="load-card">
+    <div class="loading-wrap">
+      <div class="load-joke" id="loadJoke">reading your resume...</div>
+      <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="load-sub">give us 20–30 seconds</div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="screen" id="s-result">
+  <div class="hero" style="padding-bottom:16px">
+    <div class="hero-eyebrow">The Verdict</div>
+    <h1 class="hero-headline">here's the damage.</h1>
+  </div>
+
+  <div class="score-card">
+    <div class="score-row">
+      <div>
+        <span class="score-number" id="scoreNum">0</span><span class="score-den">/10</span>
+      </div>
+      <div class="score-meta">
+        <div class="score-lbl" id="scoreLbl"></div>
+        <div class="verdict-badge" id="verdictBadge"></div>
+      </div>
+    </div>
+    <div class="one-liner-txt" id="oneLiner"></div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-box">
+      <div class="stat-val" id="statBuzz">—</div>
+      <div class="stat-label">Buzzwords</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="statSpec">—</div>
+      <div class="stat-label">Specificity</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="statHire">—</div>
+      <div class="stat-label">Would Hire</div>
+    </div>
+  </div>
+  <div class="stat-comment" id="statComment" style="display:none"></div>
+
+  <div class="info-card" id="hireCard" style="display:none">
+    <div class="card-ey">Hiring Decision</div>
+    <div class="hire-reason-txt" id="hireReason"></div>
+  </div>
+
+  <div class="info-card" id="crimesCard" style="display:none">
+    <div class="card-ey red">⚑ Top Crimes</div>
+    <ul class="crimes-list" id="crimesList"></ul>
+  </div>
+
+  <div id="sections"></div>
+
+  <div class="closing-card">
+    <p class="closing-txt" id="closingTxt"></p>
+    <div class="closing-actions">
+      <a href="https://stori.co.in" target="_blank" rel="noopener noreferrer" class="cta-main" id="ctaBtn">Fix it with Stori AI →</a>
+      <button class="btn-report" id="reportBtn">Download Report Card</button>
+    </div>
+  </div>
+
+  <div class="cta-strip" style="margin-top:16px">
+    <p><strong>Ready to fix the actual resume?</strong>
+    Stori AI builds your full application — profile, essays, interview prep.</p>
+    <a class="cta-link" href="https://stori.co.in" target="_blank" rel="noopener noreferrer">Get started</a>
+  </div>
+
+  <button class="retry-btn" id="retryBtn">↩ Roast another resume</button>
+</div>
+
+</div>
+
+<div class="share-bar" id="shareBar">
+  <div class="share-inner">
+    <button class="s-btn" id="copyBtn">Copy link</button>
+    <button class="s-btn" id="waBtn">WhatsApp</button>
+    <button class="s-btn" id="dlBtn">Save image</button>
+    <button class="s-btn primary" id="reportBarBtn">Download Report</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<canvas id="shareCanvas" width="1080" height="1080"></canvas>
+
+<script>
+const IS_LOCAL = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const API = IS_LOCAL ? 'http://localhost:5001/api/roast' : '/api/roast';
+const LS_ROAST  = 'stori_last_roast_id';
+const LS_DEVICE = 'stori_device_id';
+const ROAST_TTL = 24 * 60 * 60 * 1000;
+
+let deviceId       = getOrCreateDeviceId();
+let sessionId      = null;
+let currentRoastId = null;
+let currentRoastData = null;
+let intensity      = 'full';
+let selectedFile   = null;
+let jokeTick       = null;
+let progressPct    = 0;
+let jokeIdx        = 0;
+
+function $(id){ return document.getElementById(id); }
+const SCREENS = { land: $('s-land'), load: $('s-load'), result: $('s-result') };
+function showScreen(name) {
+  Object.values(SCREENS).forEach(s => s.classList.remove('active'));
+  SCREENS[name].classList.add('active');
+}
+
+function getOrCreateDeviceId() {
+  try {
+    let id = localStorage.getItem(LS_DEVICE);
+    if (id) return id;
+    id = buildFp(); localStorage.setItem(LS_DEVICE, id); return id;
+  } catch { return buildFp(); }
+}
+function buildFp() {
+  const raw = [navigator.userAgent, screen.width+'x'+screen.height+'x'+(screen.colorDepth||0),
+    Intl.DateTimeFormat().resolvedOptions().timeZone||'', canvasFp()].join('||');
+  return fxhash(raw);
+}
+function canvasFp() {
+  try {
+    const c = document.createElement('canvas'), x = c.getContext('2d');
+    x.font = '13px Arial'; x.fillText('stori', 2, 12); return c.toDataURL().slice(-24);
+  } catch { return '0'; }
+}
+function fxhash(s) {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193); }
+  return (h>>>0).toString(36)+(Date.now()%1e6).toString(36);
+}
+
+const JOKES = [
+  'reading your resume...','oh no.','this is... a lot.',
+  'consulting the hiring gods...','oh, the skills section.',
+  'carefully choosing words.','preparing the verdict...',
+  'almost. almost.','okay this is a lot to process.',
+  'assembling the full roast...',
+];
+
+(async function init() {
+  fetchCounter();
+  const ref = new URLSearchParams(location.search).get('ref') || '';
+  try { const d = await apiPost('/session', { ref }); if (d.sessionId) sessionId = d.sessionId; } catch {}
+  beacon('page_load', { ref });
+  checkPrevRoast();
+})();
+
+function checkPrevRoast() {
+  try {
+    const raw = localStorage.getItem(LS_ROAST);
+    if (!raw) return;
+    const { roastId, ts } = JSON.parse(raw);
+    if (!roastId || Date.now() - ts > ROAST_TTL) { localStorage.removeItem(LS_ROAST); return; }
+    $('prevBanner').style.display = 'flex';
+    $('prevView').onclick = () => loadPrev(roastId);
+    $('prevDismiss').onclick = () => { $('prevBanner').style.display = 'none'; localStorage.removeItem(LS_ROAST); };
+  } catch {}
+}
+
+async function loadPrev(roastId) {
+  $('prevBanner').style.display = 'none';
+  showScreen('load'); startLoadAnim();
+  try {
+    const roast = await apiGet('/result/' + roastId);
+    currentRoastId = roastId; stopLoadAnim(); renderRoast(roast);
+  } catch {
+    stopLoadAnim(); showScreen('land'); showErr('Previous roast expired. Upload again.');
+    localStorage.removeItem(LS_ROAST);
+  }
+}
+
+async function fetchCounter() {
+  try { const d = await apiGet('/counter'); $('counterVal').textContent = (d.count||0).toLocaleString('en-IN'); } catch {}
+}
+
+document.querySelectorAll('.int-card').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.int-card').forEach(c => c.classList.remove('active'));
+    card.classList.add('active'); intensity = card.dataset.v;
+  });
+});
+
+const dropZone = $('dropZone'), fileInput = $('fileInput'), uploadBtn = $('uploadBtn');
+fileInput.addEventListener('change', () => onFile(fileInput.files[0]));
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('over'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('over'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('over'); onFile(e.dataTransfer?.files[0]); });
+dropZone.addEventListener('keydown', e => { if (e.key==='Enter'||e.key===' ') fileInput.click(); });
+
+function onFile(file) {
+  showErr(''); if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!['pdf','docx'].includes(ext)) { showErr('Only PDF and DOCX files.'); return; }
+  if (file.size > 5*1024*1024) { showErr('File too big — max 5MB.'); return; }
+  selectedFile = file; $('fileChosen').textContent = '✓ ' + file.name; uploadBtn.disabled = false;
+}
+
+uploadBtn.addEventListener('click', doUpload);
+
+async function doUpload() {
+  if (!selectedFile) return;
+  showErr(''); uploadBtn.disabled = true;
+  beacon('upload_start', { size: selectedFile.size, ext: selectedFile.name.split('.').pop() });
+  showScreen('load'); startLoadAnim();
+  try {
+    const form = new FormData();
+    form.append('resume', selectedFile);
+    form.append('intensity', intensity);
+    if (sessionId) form.append('sessionId', sessionId);
+    const resp = await fetch(API+'/upload', { method:'POST', headers:{'X-Device-ID':deviceId}, body:form });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Upload failed');
+    currentRoastId = data.roastId;
+    beacon('upload_complete', { roastId: currentRoastId });
+    beacon('roast_start', { roastId: currentRoastId, cached: data.cached });
+    if (data.cached) {
+      const roast = await apiGet('/result/' + currentRoastId);
+      stopLoadAnim(); renderRoast(roast);
+    } else {
+      openStream(currentRoastId);
+    }
+  } catch (e) {
+    stopLoadAnim(); showScreen('land'); showErr(e.message || 'Something went wrong. Try again.'); uploadBtn.disabled = false;
+  }
+}
+
+function startLoadAnim() {
+  jokeIdx = 0; progressPct = 0;
+  $('loadJoke').textContent = JOKES[0]; $('progressFill').style.width = '0%';
+  jokeTick = setInterval(() => {
+    $('loadJoke').style.opacity = '0';
+    setTimeout(() => { jokeIdx = (jokeIdx+1)%JOKES.length; $('loadJoke').textContent = JOKES[jokeIdx]; $('loadJoke').style.opacity = '1'; }, 280);
+    progressPct = Math.min(78, progressPct + Math.random()*6+2);
+    $('progressFill').style.width = progressPct+'%';
+  }, 2600);
+}
+function stopLoadAnim() { clearInterval(jokeTick); jokeTick = null; $('progressFill').style.width = '100%'; }
+
+function openStream(roastId) {
+  const es = new EventSource(API+'/stream/'+roastId);
+  es.addEventListener('progress', () => { progressPct = Math.min(78, progressPct+3); $('progressFill').style.width = progressPct+'%'; });
+  es.addEventListener('complete', e => {
+    es.close(); stopLoadAnim();
+    try { renderRoast(JSON.parse(e.data)); }
+    catch { showScreen('land'); showErr('Got a weird response. Try again.'); uploadBtn.disabled = false; }
+  });
+  es.addEventListener('error', e => {
+    es.close(); stopLoadAnim();
+    let msg = 'Something went wrong. Try again.';
+    try { msg = JSON.parse(e.data).message || msg; } catch {}
+    showScreen('land'); showErr(msg); uploadBtn.disabled = false;
+  });
+  es.onerror = () => { es.close(); stopLoadAnim(); showScreen('land'); showErr('Connection lost. Try again.'); uploadBtn.disabled = false; };
+}
+
+function verdictColor(v) {
+  return {'Immediate Pass':'#dc2626','Strong Pass':'#dc2626','Maybe If Desperate':'#ea580c','Pity Interview':'#ca8a04','We Need to Talk':'#7c3aed'}[v]||'#374151';
+}
+function gradeColor(g) {
+  return {A:'#16a34a',B:'#2563eb',C:'#ca8a04',D:'#ea580c',F:'#dc2626'}[(g||'F')[0].toUpperCase()]||'#dc2626';
+}
+
+function renderRoast(roast) {
+  currentRoastData = roast;
+
+  $('scoreNum').textContent = roast.score?.toFixed(1) ?? '?';
+  $('scoreLbl').textContent = (roast.score_label || '').toUpperCase();
+  $('oneLiner').textContent = roast.one_liner || '';
+  const vb = $('verdictBadge');
+  vb.textContent = roast.verdict || '';
+  vb.style.background = verdictColor(roast.verdict);
+
+  $('statBuzz').textContent = roast.stats?.buzzword_density || '—';
+  $('statSpec').textContent = roast.stats?.specificity_rating || '—';
+  const hEl = $('statHire');
+  hEl.textContent = roast.would_hire ? 'Yes' : 'No';
+  hEl.className = 'stat-val ' + (roast.would_hire ? 'hire-yes' : 'hire-no');
+
+  const sc = $('statComment');
+  if (roast.stats?.formatting_comment) { sc.textContent = roast.stats.formatting_comment; sc.style.display = ''; }
+  else sc.style.display = 'none';
+
+  const hc = $('hireCard');
+  if (roast.hire_reason) { $('hireReason').textContent = roast.hire_reason; hc.style.display = ''; }
+  else hc.style.display = 'none';
+
+  const cc = $('crimesCard');
+  if ((roast.top_crimes||[]).length) {
+    $('crimesList').innerHTML = (roast.top_crimes||[]).map(c => `<li>${esc(c)}</li>`).join('');
+    cc.style.display = '';
+  } else cc.style.display = 'none';
+
+  const container = $('sections');
+  container.innerHTML = '';
+  (roast.sections||[]).forEach((sec, i) => {
+    const card = document.createElement('div');
+    card.className = 'sec-card';
+    const flagsHtml = (sec.red_flags||[]).length
+      ? `<div class="rf-box"><div class="rf-label">Red Flags</div><ul class="rf-list">${(sec.red_flags||[]).map(f=>`<li>${esc(f)}</li>`).join('')}</ul></div>`
+      : '';
+    const hlHtml = sec.highlight ? `<div class="hl-box">${esc(sec.highlight)}</div>` : '';
+    card.innerHTML =
+      `<div class="sec-header"><span class="sec-title">${esc(sec.title)}</span><span class="grade-badge" style="background:${gradeColor(sec.grade)}">${esc(sec.grade||'?')}</span></div>` +
+      `<div class="sec-roast"></div>${flagsHtml}${hlHtml}`;
+    container.appendChild(card);
+    setTimeout(() => { card.classList.add('show'); typewriter(card.querySelector('.sec-roast'), sec.roast||''); }, i*240+120);
+  });
+
+  $('closingTxt').textContent = roast.closing || '';
+
+  try { localStorage.setItem(LS_ROAST, JSON.stringify({ roastId: roast.roastId, ts: Date.now() })); } catch {}
+  showScreen('result');
+  $('shareBar').classList.add('show');
+  beacon('roast_complete', { roastId: roast.roastId, score: roast.score, cached: roast.cacheHit });
+  document.addEventListener('click', skipTypewriter, { once: true });
+}
+
+function skipTypewriter() {
+  document.querySelectorAll('.sec-card').forEach(card => {
+    card.classList.add('show');
+    const el = card.querySelector('.sec-roast');
+    if (el && el._full) { clearInterval(el._tw); el.textContent = el._full; }
+  });
+}
+function typewriter(el, text) {
+  el._full = text; let i = 0; el.textContent = '';
+  el._tw = setInterval(() => { if (i < text.length) el.textContent += text[i++]; else clearInterval(el._tw); }, 14);
+}
+
+$('copyBtn').addEventListener('click', () => {
+  const url = location.origin + location.pathname + '?ref=share';
+  navigator.clipboard?.writeText(url).then(() => toast('Link copied!')).catch(() => toast(url));
+  beacon('share_clicked', { platform:'copy', roastId:currentRoastId });
+});
+$('waBtn').addEventListener('click', () => {
+  const score = $('scoreNum').textContent, lbl = $('scoreLbl').textContent;
+  const msg = `I got ${score}/10 — "${lbl}" on Resume Roast 💀\nCheck yours: ${location.origin}${location.pathname}?ref=wa`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
+  beacon('share_clicked', { platform:'whatsapp', roastId:currentRoastId });
+});
+$('dlBtn').addEventListener('click', async () => {
+  $('dlBtn').textContent = 'Generating...';
+  try {
+    const url = await buildCard();
+    const a = document.createElement('a'); a.href = url; a.download = 'resume-roast.png'; a.click();
+    toast('Saved!');
+    beacon('share_clicked', { platform:'download_image', roastId:currentRoastId });
+  } catch { toast('Failed. Try again.'); }
+  $('dlBtn').textContent = 'Save image';
+});
+
+function doDownloadReport() {
+  if (!currentRoastData) return;
+  const html = generateReportCardHTML(currentRoastData);
+  const blob = new Blob([html], { type:'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'resume-roast-report.html'; a.click();
+  URL.revokeObjectURL(url);
+  toast('Report saved!');
+  beacon('share_clicked', { platform:'report_card', roastId:currentRoastId });
+}
+$('reportBtn').addEventListener('click', doDownloadReport);
+$('reportBarBtn').addEventListener('click', doDownloadReport);
+
+$('ctaBtn').addEventListener('click', () => beacon('cta_clicked', { roastId:currentRoastId }));
+$('retryBtn').addEventListener('click', () => {
+  beacon('retry_clicked', { roastId:currentRoastId });
+  currentRoastData = null; selectedFile = null; fileInput.value = ''; $('fileChosen').textContent = '';
+  uploadBtn.disabled = true; showErr(''); $('sections').innerHTML = ''; $('shareBar').classList.remove('show');
+  showScreen('land');
+});
+
+function buildCard() {
+  return new Promise(resolve => {
+    const cv = $('shareCanvas'), ctx = cv.getContext('2d'), W=1080, H=1080;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = '#2563eb'; ctx.fillRect(0,0,W,12);
+    ctx.fillStyle = '#111'; ctx.font = '700 32px system-ui,Arial'; ctx.textAlign = 'left'; ctx.fillText('stori',80,78);
+    ctx.fillStyle = '#2563eb'; ctx.font = '700 22px system-ui,Arial'; ctx.fillText('Resume Roast',80,108);
+    roundRect(ctx,80,140,W-160,260,16); ctx.fillStyle = '#0f0f0f'; ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.font = '900 180px system-ui,Arial'; ctx.textAlign = 'center'; ctx.fillText($('scoreNum').textContent,W/2,340);
+    ctx.fillStyle = '#444'; ctx.font = '500 52px system-ui,Arial'; ctx.fillText('/10',W/2,395);
+    ctx.fillStyle = '#2563eb'; ctx.font = '700 30px system-ui,Arial'; ctx.fillText(($('scoreLbl').textContent||'').toUpperCase(),W/2,460);
+    ctx.fillStyle = '#666'; ctx.font = 'italic 26px system-ui,Arial';
+    wrapText(ctx,'"'+$('oneLiner').textContent+'"',W/2,510,W-160,38,'center');
+    ctx.strokeStyle = '#e8e8e8'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(80,590); ctx.lineTo(W-80,590); ctx.stroke();
+    let y = 626;
+    document.querySelectorAll('.sec-card').forEach((card,i) => {
+      if (i >= 3) return;
+      const title = card.querySelector('.sec-title')?.textContent||'';
+      const roast = card.querySelector('.sec-roast')?._full||card.querySelector('.sec-roast')?.textContent||'';
+      if (!title||!roast) return;
+      ctx.fillStyle = '#2563eb'; ctx.font = '700 20px system-ui,Arial'; ctx.textAlign = 'left'; ctx.fillText(title.toUpperCase(),80,y);
+      ctx.fillStyle = '#333'; ctx.font = '22px system-ui,Arial';
+      wrapText(ctx,(roast.length>90?roast.slice(0,87)+'...':roast),80,y+30,W-160,30,'left'); y+=118;
+    });
+    ctx.fillStyle = '#ccc'; ctx.font = '22px system-ui,Arial'; ctx.textAlign = 'right';
+    ctx.fillText('roast.stori.co.in',W-80,H-44);
+    resolve(cv.toDataURL('image/png'));
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r) {
+  ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+function wrapText(ctx,text,x,y,maxW,lh,align) {
+  ctx.textAlign = align; const words = text.split(' '); let line = '';
+  for (let i=0;i<words.length;i++) {
+    const test = line+words[i]+' ';
+    if (ctx.measureText(test).width>maxW&&i>0) { ctx.fillText(line.trim(),x,y); line=words[i]+' '; y+=lh; } else line=test;
+  }
+  if (line.trim()) ctx.fillText(line.trim(),x,y);
+}
+
+function generateReportCardHTML(roast) {
+  const date = new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'});
+  const VBG = {'Immediate Pass':'#dc2626','Strong Pass':'#dc2626','Maybe If Desperate':'#ea580c','Pity Interview':'#ca8a04','We Need to Talk':'#7c3aed'};
+  const GBG = {A:'#16a34a',B:'#2563eb',C:'#ca8a04',D:'#ea580c',F:'#dc2626'};
+  function gc(g){ return GBG[(g||'F')[0].toUpperCase()]||'#dc2626'; }
+  function h(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  const vColor = VBG[roast.verdict]||'#374151';
+
+  const secHtml = (roast.sections||[]).map(s => `
+    <div style="margin-bottom:28px;page-break-inside:avoid">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+        <span style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#374151">${h(s.title)}</span>
+        <span style="background:${gc(s.grade)};color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px">${h(s.grade||'?')}</span>
+      </div>
+      <p style="font-size:14px;line-height:1.85;color:#1f2937;margin-bottom:10px">${h(s.roast||'')}</p>
+      ${(s.red_flags||[]).length?`<div style="background:#fef2f2;border-left:3px solid #dc2626;padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:8px">
+        <div style="font-size:10px;font-weight:700;color:#dc2626;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px">RED FLAGS</div>
+        <ul style="margin:0;padding-left:16px;font-size:13px;color:#7f1d1d;line-height:1.9">${(s.red_flags||[]).map(f=>`<li>${h(f)}</li>`).join('')}</ul>
+      </div>`:''}
+      ${s.highlight?`<div style="background:#f0fdf4;border-left:3px solid #16a34a;padding:8px 14px;border-radius:0 6px 6px 0;font-size:13px;color:#14532d">★ ${h(s.highlight)}</div>`:''}
+    </div>`).join('');
+
+  const crimesHtml = (roast.top_crimes||[]).map((c,i)=>`
+    <li style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;font-size:14px;color:#374151;line-height:1.55">
+      <span style="background:#fef2f2;color:#dc2626;font-size:10px;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</span>
+      ${h(c)}
+    </li>`).join('');
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Resume Roast Report — Stori AI</title>
+<style>
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none}.sec{page-break-inside:avoid}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:#f0f0f0;color:#1f2937;font-size:14px}
+.page{max-width:760px;margin:32px auto;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,.12)}
+.rh{background:#0f0f0f;padding:36px 40px 28px}
+.rh-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+.rh-brand{font-size:22px;font-weight:800;letter-spacing:-.3px;color:#fff}
+.rh-sub{font-size:12px;color:#555;margin-top:3px}
+.rh-date{font-size:12px;color:#555;text-align:right}
+.sc-row{display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.sc-big{font-size:100px;font-weight:900;line-height:1;color:#fff}
+.sc-den{font-size:38px;font-weight:400;color:#444}
+.sc-meta{display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.sc-lbl{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#2563eb}
+.sc-verdict{display:inline-block;background:${vColor};color:#fff;font-size:11px;font-weight:700;padding:5px 14px;border-radius:999px;letter-spacing:.5px}
+.sc-quote{font-size:16px;font-style:italic;color:#888;margin-top:20px;line-height:1.65;border-left:3px solid #2563eb;padding-left:16px}
+.rb{padding:32px 40px}
+.stats-g{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:24px}
+.stat-g{background:#f8f8f8;border:1px solid #e5e7eb;border-radius:8px;padding:14px 12px;text-align:center}
+.stat-g-v{font-size:18px;font-weight:800;color:#111;margin-bottom:4px}
+.stat-g-l{font-size:10px;color:#9ca3af;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+.hire-g{background:#0f0f0f;border-radius:8px;padding:16px 20px;margin-bottom:24px}
+.g-ey{font-size:10px;font-weight:700;color:#555;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.hire-g-t{font-size:14px;color:#d0d0d0;line-height:1.8}
+.crimes-g{margin-bottom:28px}
+.crimes-g-t{font-size:12px;font-weight:700;color:#dc2626;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.crimes-g-l{list-style:none;padding:0}
+.secs-t{font-size:12px;font-weight:700;color:#374151;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;padding-top:24px;border-top:1px solid #e5e7eb}
+.closing-g{background:#eff6ff;border-radius:8px;padding:18px 20px;margin-top:24px;font-size:14px;color:#1e40af;line-height:1.7}
+.rf{background:#0f0f0f;padding:20px 40px;display:flex;justify-content:space-between;align-items:center}
+.rf-brand{font-size:14px;font-weight:700;color:#fff}
+.rf-url{font-size:13px;color:#555}
+.print-btn{padding:11px 28px;background:#2563eb;color:#fff;border:none;border-radius:999px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.print-btn:hover{background:#1d4ed8}
+</style>
+</head>
+<body>
+<div class="no-print" style="text-align:center;padding:20px 0 8px">
+  <button class="print-btn" onclick="window.print()">Save as PDF — File → Print → Save as PDF</button>
+</div>
+<div class="page">
+  <div class="rh">
+    <div class="rh-top">
+      <div><div class="rh-brand">stori</div><div class="rh-sub">Resume Roast Report Card</div></div>
+      <div class="rh-date">${date}</div>
+    </div>
+    <div class="sc-row">
+      <div><span class="sc-big">${roast.score?.toFixed(1)||'?'}</span><span class="sc-den">/10</span></div>
+      <div class="sc-meta">
+        <div class="sc-lbl">${h(roast.score_label||'')}</div>
+        <div class="sc-verdict">${h(roast.verdict||'')}</div>
+      </div>
+    </div>
+    ${roast.one_liner?`<div class="sc-quote">"${h(roast.one_liner)}"</div>`:''}
+  </div>
+  <div class="rb">
+    <div class="stats-g">
+      <div class="stat-g"><div class="stat-g-v">${h(roast.stats?.buzzword_density||'—')}</div><div class="stat-g-l">Buzzwords</div></div>
+      <div class="stat-g"><div class="stat-g-v">${h(roast.stats?.specificity_rating||'—')}</div><div class="stat-g-l">Specificity</div></div>
+      <div class="stat-g"><div class="stat-g-v" style="color:${roast.would_hire?'#16a34a':'#dc2626'}">${roast.would_hire?'Yes':'No'}</div><div class="stat-g-l">Would Hire</div></div>
+    </div>
+    ${roast.hire_reason?`<div class="hire-g"><div class="g-ey">Hiring Decision</div><div class="hire-g-t">${h(roast.hire_reason)}</div></div>`:''}
+    ${(roast.top_crimes||[]).length?`<div class="crimes-g"><div class="crimes-g-t">⚑ Top Crimes</div><ul class="crimes-g-l">${crimesHtml}</ul></div>`:''}
+    <div class="secs-t">Section Breakdown</div>
+    ${secHtml}
+    ${roast.closing?`<div class="closing-g">${h(roast.closing)}</div>`:''}
+  </div>
+  <div class="rf"><div class="rf-brand">stori</div><div class="rf-url">roast.stori.co.in</div></div>
+</div>
+</body>
+</html>`;
+}
+
+function showErr(msg) { $('landErr').textContent = msg; }
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+async function apiGet(path) {
+  const r = await fetch(API+path, { headers:{'X-Device-ID':deviceId} });
+  const d = await r.json(); if (!r.ok) throw new Error(d.error||r.statusText); return d;
+}
+async function apiPost(path, body) {
+  const r = await fetch(API+path, { method:'POST', headers:{'Content-Type':'application/json','X-Device-ID':deviceId}, body:JSON.stringify(body) });
+  const d = await r.json(); if (!r.ok) throw new Error(d.error||r.statusText); return d;
+}
+function beacon(eventType, meta) {
+  const payload = JSON.stringify({ sessionId:sessionId||deviceId, roastId:currentRoastId, eventType, meta });
+  try {
+    if (!navigator.sendBeacon(API+'/event', new Blob([payload],{type:'application/json'}))) throw 0;
+  } catch {
+    fetch(API+'/event', { method:'POST', headers:{'Content-Type':'application/json'}, body:payload, keepalive:true }).catch(()=>{});
+  }
+}
+</script>
+</body>
+</html>
