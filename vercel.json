@@ -1,0 +1,9 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/api/roast/:path*",
+      "destination": "https://www.storiapidomain.online/api/roast/:path*"
+    }
+  ]
+}
