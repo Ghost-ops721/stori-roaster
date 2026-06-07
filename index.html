@@ -124,7 +124,7 @@
         font-weight: 500;
         letter-spacing: 0.28em;
         text-transform: uppercase;
-        color: rgba(200, 146, 58, 0.72);
+        color: rgba(245, 183, 49, 0.72);
         line-height: 1;
       }
       .nav-cta {
@@ -1485,9 +1485,9 @@
                   x2="80%"
                   y2="0%"
                 >
-                  <stop offset="0%" stop-color="#C8923A" />
+                  <stop offset="0%" stop-color="#F5B731" />
                   <stop offset="55%" stop-color="#F5E6CE" />
-                  <stop offset="100%" stop-color="#C8923A" />
+                  <stop offset="100%" stop-color="#F5B731" />
                 </linearGradient>
               </defs>
               <line x1="32" y1="3" x2="3" y2="55" stroke="url(#storiMarkGrad)" stroke-width="2.8" stroke-linecap="round" />
@@ -1835,6 +1835,27 @@
       const LS_DEVICE = "stori_device_id";
       const DEFAULT_TAB = "roast";
       const ROAST_TTL = 24 * 60 * 60 * 1000;
+      const BANNED_WORD = /\bcunts?\b/gi;
+
+      function cleanRoastText(str) {
+        if (typeof str !== "string" || !str) return str;
+        return str.replace(BANNED_WORD, "").replace(/\s{2,}/g, " ").trim();
+      }
+
+      function sanitizeRoastPayload(roast) {
+        if (!roast || typeof roast !== "object") return roast;
+        const walk = (v) => {
+          if (typeof v === "string") return cleanRoastText(v);
+          if (Array.isArray(v)) return v.map(walk);
+          if (v && typeof v === "object") {
+            const o = {};
+            for (const [k, val] of Object.entries(v)) o[k] = walk(val);
+            return o;
+          }
+          return v;
+        };
+        return walk(JSON.parse(JSON.stringify(roast)));
+      }
 
       let deviceId = getOrCreateDeviceId();
       let sessionId = null;
@@ -2282,6 +2303,7 @@
       }
 
       function renderRoast(roast) {
+        roast = sanitizeRoastPayload(roast);
         currentRoastData = roast;
 
         setActiveTab(getSavedTab(), false);

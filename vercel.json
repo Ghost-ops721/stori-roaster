@@ -4,6 +4,10 @@
     {
       "source": "/api/roast/:path*",
       "destination": "https://www.storiapidomain.online/api/roast/:path*"
+    },
+    {
+      "source": "/api/face/:path*",
+      "destination": "https://www.storiapidomain.online/api/face/:path*"
     }
   ]
 }
